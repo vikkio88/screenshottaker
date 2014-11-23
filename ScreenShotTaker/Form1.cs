@@ -17,6 +17,8 @@ namespace ScreenShotTaker
         int c = 1;
         string filePath;
         string pathSeparator = @"\";
+        public static int x;
+        public static int y;
 
         public Form1()
         {
@@ -31,8 +33,8 @@ namespace ScreenShotTaker
         private void SaveScreenShot()
         {
             //SendKeys.Send("{PRTSC}");
-            var bmpScreenshot = new Bitmap(Screen.PrimaryScreen.Bounds.Width,
-                               Screen.PrimaryScreen.Bounds.Height,
+            var bmpScreenshot = new Bitmap(x,
+                               y,
                                PixelFormat.Format32bppArgb);
 
             // Create a graphics object from the bitmap.
@@ -57,8 +59,11 @@ namespace ScreenShotTaker
         private void btnStart_Click(object sender, EventArgs e)
         {
             int interval;
+            this.Hide();
             CheckDirectory();
+            SelectPortion();
             this.WindowState = FormWindowState.Minimized;
+            this.Show();
 
             try
             {
@@ -74,6 +79,35 @@ namespace ScreenShotTaker
             btnStart.Enabled = false;
             btnStop.Enabled = true;
             timer1.Start();
+        }
+
+        private void SelectPortion()
+        {
+            
+            var bmpScreenshot = new Bitmap(Screen.PrimaryScreen.Bounds.Width,
+                     Screen.PrimaryScreen.Bounds.Height,
+                     PixelFormat.Format32bppArgb);
+
+            // Create a graphics object from the bitmap.
+            var gfxScreenshot = Graphics.FromImage(bmpScreenshot);
+
+            // Take the screenshot from the upper left corner to the right bottom corner.
+            gfxScreenshot.CopyFromScreen(Screen.PrimaryScreen.Bounds.X,
+                                        Screen.PrimaryScreen.Bounds.Y,
+                                        0,
+                                        0,
+                                        Screen.PrimaryScreen.Bounds.Size,
+                                        CopyPixelOperation.SourceCopy);
+            
+            Form2 screen = new Form2(bmpScreenshot);
+            screen.WindowState = FormWindowState.Maximized;
+            screen.Width = Screen.PrimaryScreen.Bounds.X;
+            screen.Height = Screen.PrimaryScreen.Bounds.Y;
+            screen.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
+            screen.ShowDialog();
+
+            
+
         }
 
         private void CheckDirectory()
